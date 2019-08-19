@@ -1,58 +1,11 @@
-# postcss-pxtorem [![NPM version](https://badge.fury.io/js/postcss-pxtorem.svg)](http://badge.fury.io/js/postcss-pxtorem)
+# postcss-pxtorem-multi [![NPM version](https://badge.fury.io/js/postcss-pxtorem-multi.svg)](http://badge.fury.io/js/postcss-pxtorem-multi)
 
-A plugin for [PostCSS](https://github.com/ai/postcss) that generates rem units from pixel units.
+This is a fork based on [postcss-pxtorem](https://github.com/cuth/postcss-pxtorem). The difference is `postcss-pxtorem-multi` supports multiple rules.
 
 ## Install
 
 ```shell
-$ npm install postcss-pxtorem --save-dev
-```
-
-## Usage
-
-Pixels are the easiest unit to use (*opinion*). The only issue with them is that they don't let browsers change the default font size of 16. This script converts every px value to a rem from the properties you choose to allow the browser to set the font size.
-
-
-### Input/Output
-
-*With the default settings, only font related properties are targeted.*
-
-```css
-// input
-h1 {
-    margin: 0 0 20px;
-    font-size: 32px;
-    line-height: 1.2;
-    letter-spacing: 1px;
-}
-
-// output
-h1 {
-    margin: 0 0 20px;
-    font-size: 2rem;
-    line-height: 1.2;
-    letter-spacing: 0.0625rem;
-}
-```
-
-### Example
-
-```js
-var fs = require('fs');
-var postcss = require('postcss');
-var pxtorem = require('postcss-pxtorem');
-var css = fs.readFileSync('main.css', 'utf8');
-var options = {
-    replace: false
-};
-var processedCss = postcss(pxtorem(options)).process(css).css;
-
-fs.writeFile('main-rem.css', processedCss, function (err) {
-  if (err) {
-    throw err;
-  }
-  console.log('Rem file written.');
-});
+$ npm install postcss-pxtorem-multi --save-dev
 ```
 
 ### options
@@ -61,16 +14,20 @@ Type: `Object | Null`
 Default:
 ```js
 {
+    include: null,
+    exclude: null,
     rootValue: 16,
     unitPrecision: 5,
     propList: ['font', 'font-size', 'line-height', 'letter-spacing'],
     selectorBlackList: [],
     replace: true,
     mediaQuery: false,
-    minPixelValue: 0
+    minPixelValue: 0,
+    rules: []
 }
 ```
-
+- `include` (String|RegExp|Array<String|RegExp>) Files to include
+- `exclude` (String|RegExp|Array<String|RegExp>) Files to exclude
 - `rootValue` (Number) The root element font size.
 - `unitPrecision` (Number) The decimal numbers to allow the REM units to grow to.
 - `propList` (Array) The properties that can change from px to rem.
@@ -87,24 +44,27 @@ Default:
 - `replace` (Boolean) replaces rules containing rems instead of adding fallbacks.
 - `mediaQuery` (Boolean) Allow px to be converted in media queries.
 - `minPixelValue` (Number) Set the minimum pixel value to replace.
+- `rules`: (Object) Supporting all the above parameters.
 
 
-### Use with gulp-postcss and autoprefixer
+### Use with gulp-postcss (**Gulp**)
 
 ```js
 var gulp = require('gulp');
 var postcss = require('gulp-postcss');
-var autoprefixer = require('autoprefixer');
-var pxtorem = require('postcss-pxtorem');
+var pxtorem = require('postcss-pxtorem-multi');
 
 gulp.task('css', function () {
 
     var processors = [
-        autoprefixer({
-            browsers: 'last 1 version'
-        }),
         pxtorem({
-            replace: false
+            rootValue: 16,
+            rules: [
+                {
+                    include: 'common.css',
+                    rootValue: 32,
+                }
+            ]
         })
     ];
 
@@ -112,6 +72,26 @@ gulp.task('css', function () {
         .pipe(postcss(processors))
         .pipe(gulp.dest('build/css'));
 });
+```
+
+### Use with postcss-loader (**Webpack**)
+`postcss.config.js`
+```js
+module.exports = {
+    plugins: {
+        "pxtorem-multi": {
+            rootValue: 75,
+            propList: ['*'],
+            rules: [
+                {
+                    include: ['/node_modules/vant/'],
+                    rootValue: 37.5,
+                    propList: ['*'],
+                }
+            ]
+        }
+    }
+}
 ```
 
 ### A message about ignoring properties
@@ -123,7 +103,7 @@ Currently, the easiest way to have a single property ignored is to use a capital
     font-size: 16px; // converted to 1rem
 }
 
-// `Px` or `PX` is ignored by `postcss-pxtorem` but still accepted by browsers
+// `Px` or `PX` is ignored by `postcss-pxtorem-multi` but still accepted by browsers
 .ignore {
     border: 1Px solid; // ignored
     border-width: 2PX; // ignored

@@ -1,14 +1,14 @@
 {
-  "name": "postcss-pxtorem",
-  "description": "A CSS post-processor that converts px to rem.",
-  "version": "4.0.1",
-  "author": "cuth",
+  "name": "postcss-pxtorem-multi",
+  "description": "A CSS post-processor that supports multiple rules to converts px to rem based on postcss-pxtorem.",
+  "version": "1.0.0",
+  "author": "TonyXiang",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:cuth/postcss-pxtorem.git"
+    "url": "git@github.com:TonyXiang/postcss-pxtorem-multi.git"
   },
-  "bugs": "https://github.com/cuth/postcss-pxtorem/issues",
+  "bugs": "https://github.com/TonyXiang/postcss-pxtorem-multi/issues",
   "main": "index.js",
   "scripts": {
     "test": "jasmine-node spec"
@@ -22,7 +22,12 @@
     "pixel",
     "px",
     "postcss",
-    "postcss-plugin"
+    "mutil",
+    "mutilple",
+    "pxtorem",
+    "px2rem",
+    "postcss-plugin",
+    "postcss-pxtorem"
   ],
   "dependencies": {
     "object-assign": "^4.1.0",

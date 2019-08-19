@@ -4,15 +4,19 @@ var postcss = require('postcss');
 var objectAssign = require('object-assign');
 var pxRegex = require('./lib/pixel-unit-regex');
 var filterPropList = require('./lib/filter-prop-list');
+var getFinalOptions = require('./lib/get-final-options');
 
 var defaults = {
+    include: null,
+    exclude: null,
     rootValue: 16,
     unitPrecision: 5,
     selectorBlackList: [],
     propList: ['font', 'font-size', 'line-height', 'letter-spacing'],
     replace: true,
     mediaQuery: false,
-    minPixelValue: 0
+    minPixelValue: 0,
+    rules: []
 };
 
 var legacyOptions = {
@@ -24,16 +28,18 @@ var legacyOptions = {
     'propWhiteList': 'propList'
 };
 
-module.exports = postcss.plugin('postcss-pxtorem', function (options) {
+module.exports = postcss.plugin('postcss-pxtorem-multi', function (options) {
 
-    convertLegacyOptions(options);
+    return function (css, result) {
+        var newOptions = objectAssign({}, options);
+        if (result && result.opts && result.opts.from) {
+            newOptions = getFinalOptions(result.opts.from, options);
+        }
+        convertLegacyOptions(newOptions);
+        var opts = objectAssign({}, defaults, newOptions);
+        var pxReplace = createPxReplace(opts.rootValue, opts.unitPrecision, opts.minPixelValue);
 
-    var opts = objectAssign({}, defaults, options);
-    var pxReplace = createPxReplace(opts.rootValue, opts.unitPrecision, opts.minPixelValue);
-
-    var satisfyPropList = createPropListMatcher(opts.propList);
-
-    return function (css) {
+        var satisfyPropList = createPropListMatcher(opts.propList);
 
         css.walkDecls(function (decl, i) {
             // This should be the fastest test and will remove most declarations
