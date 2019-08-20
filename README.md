@@ -75,11 +75,11 @@ gulp.task('css', function () {
 ```
 
 ### Use with postcss-loader (**Webpack**)
-`postcss.config.js`
+`postcss.config.js` or `.postcssrc.js`
 ```js
 module.exports = {
     plugins: {
-        "pxtorem-multi": {
+        "postcss-pxtorem-multi": {
             rootValue: 75,
             propList: ['*'],
             rules: [
