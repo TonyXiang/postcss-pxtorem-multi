@@ -1,7 +1,7 @@
 {
   "name": "postcss-pxtorem-multi",
   "description": "A CSS post-processor that supports multiple rules to converts px to rem based on postcss-pxtorem.",
-  "version": "1.0.1",
+  "version": "1.0.2-0",
   "author": "TonyXiang",
   "license": "MIT",
   "repository": {
